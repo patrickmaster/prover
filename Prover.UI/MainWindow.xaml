@@ -1,0 +1,56 @@
+﻿<Window x:Class="Prover.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prover="clr-namespace:Prover.UI.ViewModel"
+        xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+        ResizeMode="CanResize"
+        Title="MainWindow" MinHeight="350" MinWidth="525">
+    <Window.Resources>
+        <RoutedUICommand x:Key="Commands.SolveInline"></RoutedUICommand>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="Open"
+                        CanExecute="Open_CanExecute"
+                        Executed="Open_Executed" />
+        <CommandBinding Command="{StaticResource Commands.SolveInline}"
+                        CanExecute="SolveInline_CanExecute"
+                        Executed="SolveInline_Executed"></CommandBinding>
+    </Window.CommandBindings>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Plik">
+                <MenuItem Header="Otwórz" Command="Open"/>
+                <MenuItem Header="Zapisz" Command="Save"/>
+                <MenuItem Header="Zapisz jako" Command="SaveAs" />
+                <MenuItem Header="Wyjdź" Command="Close"/>
+            </MenuItem>
+            <MenuItem Header="Drzewo"></MenuItem>
+            <MenuItem Header="Narzędzia">
+                <MenuItem Header="Ustawienia"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="200"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <graphsharp:GraphLayout x:Name="Graph" Grid.Column="0"
+                                    Graph="{Binding}"
+                                    LayoutAlgorithmType="Tree" 
+                                    OverlapRemovalAlgorithmType="FSA" />
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="Formuła"></TextBlock>
+                <TextBox Height="100" TextWrapping="Wrap">
+                    <TextBox.Text>
+                        <Binding Path="Formula.Value"></Binding>
+                    </TextBox.Text>
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{StaticResource Commands.SolveInline}"
+                                    Gesture="CTRL+ENTER"></KeyBinding>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Command="{StaticResource Commands.SolveInline}">Rozwiąż</Button>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>

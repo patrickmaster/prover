@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="a06a355d-693a-4604-a9cd-45f10504d34d" name="Graph" linkedPackageId="13703f96-3475-4478-848e-d55a54c8c847" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="c385d794-d472-4837-8fc9-7ad2e071d800" name="INode" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="2597b4ab-dd78-45fa-a5f4-30249db53a65" />
+        <targetEnds>
+          <association Id="7ea62ec1-c0c6-4146-8f0f-0730628b4115" isDerived="false" sourceEndRoleName="INode" targetEndRoleName="IConnection" isLeaf="false" isAbstract="false">
+            <interfaceMoniker Id="c49a7861-fe4c-4efe-8179-fe001afc6aa7" LastKnownName="IConnection" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="7b63acb0-01b7-4f87-af4e-154646425357" name="INode" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Shared" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="3babf93f-9271-4220-85d7-fdeea64c3e3d" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="06ada027-1ad8-45d7-b65f-3abedb4ac09a" name="IConnection" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="0047b7e8-0650-4814-969d-0dcc12c10150" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="936938ea-6623-48bb-b057-954dad51c297" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="146540f1-1705-4612-95ab-350feb7e8f32" name="RootNode" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="a419186d-e5cd-4243-ad87-30c2b328d201" />
+        <suppliersInternal>
+          <interfaceRealization Id="3705899d-94a1-41b1-afd6-555ffa76e910">
+            <interfaceMoniker Id="c385d794-d472-4837-8fc9-7ad2e071d800" LastKnownName="INode" />
+            <elementDefinition Id="16bd431a-a85d-46e6-a47f-5610037b5033" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="3503a440-40cf-4962-a954-aa4ef49ce9a6" name="LeafNode" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="3b5632c5-34eb-4450-9a3a-5631b8eabb5d" />
+        <suppliersInternal>
+          <interfaceRealization Id="8724850c-0a07-40e1-b7f6-0ff4cf5c1cd1">
+            <interfaceMoniker Id="c385d794-d472-4837-8fc9-7ad2e071d800" LastKnownName="INode" />
+            <elementDefinition Id="250f5b1c-2892-4023-a67b-156b443a344c" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="a1df92b2-2746-437d-bce0-1ac379658590" name="IntermediateNode" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="607b64e6-7722-42c1-96d9-6ca2681058b5" />
+        <suppliersInternal>
+          <interfaceRealization Id="ba256494-2837-48cb-9816-587e28b75390">
+            <interfaceMoniker Id="c385d794-d472-4837-8fc9-7ad2e071d800" LastKnownName="INode" />
+            <elementDefinition Id="b126a910-0a7c-445a-9e90-26d9d11ae8f0" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="c49a7861-fe4c-4efe-8179-fe001afc6aa7" name="IConnection" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="7acbdf54-f5cb-4413-baaf-882df9f3ea5c" />
+        <targetEnds>
+          <association Id="08f74bbc-ff9c-44c0-9eec-d89d508b4623" isDerived="false" sourceEndRoleName="IConnection" targetEndRoleName="INode" isLeaf="false" isAbstract="false">
+            <interfaceMoniker Id="c385d794-d472-4837-8fc9-7ad2e071d800" LastKnownName="INode" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="07a2c923-b958-4652-b24d-c7431904905d" name="IConnection" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="741317a4-5efe-4099-8e4b-680d33c5ba3a" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="051d5539-7bac-49f5-bdfc-ca5d933760a6" name="INode" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="8e6c83a7-a448-4d77-9aa8-25564254f0fd" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="7dc1f828-ff78-4c82-a425-8c284e4ebc03" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="9265c396-05aa-47ac-a749-36a686203ad4" name="SemanticTreeConnection" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="4a4c4b97-d6d4-469b-8a1b-7af32296a5a0" />
+        <suppliersInternal>
+          <interfaceRealization Id="d3257f89-2b6f-4e64-a30f-bd41021d6afb">
+            <interfaceMoniker Id="c49a7861-fe4c-4efe-8179-fe001afc6aa7" LastKnownName="IConnection" />
+            <elementDefinition Id="6bf9645a-2e2a-4744-ae5e-a41f45cbee73" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+  </packagedElements>
+  <package Id="13703f96-3475-4478-848e-d55a54c8c847" name="Prover.Modeling">
+    <elementDefinition Id="8b03c670-e902-4af2-ac49-18e72312368d" />
+    <profileInstances>
+      <packageHasProfileInstances Id="4558ac23-9495-4ef6-8ec3-0922efa15f8d">
+        <profileInstance Id="429a07b8-e510-4021-b711-f555a76d120d" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="30779148-c9f4-437c-abbe-d29982c6abab">
+        <profileInstance Id="fdaa49d3-a960-4764-93d7-ba7e7b5401d7" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</logicalClassDesignerModel>

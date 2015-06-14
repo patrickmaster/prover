@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="30bfc131-31d5-4f15-be4a-a7cd8bd01a07" name="Expression" linkedPackageId="fc000acc-8dd1-4065-8be8-cf9cb080fb25" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="dbb94064-a7c9-4feb-968e-6af734e19cfb" name="IExpression" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="c05766d9-6a2a-4cc4-9d5e-25aca1da111a" />
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" name="IOperator" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="8cfc7e34-ad0a-49f3-a0ca-96b954600acc" />
+        <generalsInternal>
+          <generalization Id="139c7eca-ef25-4422-ac8e-74453fcc58d8" isSubstitutable="false">
+            <interfaceMoniker Id="dbb94064-a7c9-4feb-968e-6af734e19cfb" LastKnownName="IExpression" />
+            <elementDefinition Id="ffdd7658-e259-4439-98ff-6be7c0abc80f" />
+          </generalization>
+        </generalsInternal>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="a1be108f-ed0f-44b1-845b-33e6b3a54581" name="Conjunction" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="b3b08193-698b-400d-96c4-fb9b0e1bd2e6" />
+        <suppliersInternal>
+          <interfaceRealization Id="d92211f0-8fea-4325-9885-956cf9e6d540">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="0088a4ca-8fdd-42b3-b271-dcc2d606700e" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="4b48c722-245d-4227-b7dd-262aeeb6a5e2" name="Disjunction" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="3a8f41b1-495e-411f-9b00-31be8918f67d" />
+        <suppliersInternal>
+          <interfaceRealization Id="69b41a88-1311-4c84-860d-a7ead6f1310f">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="04640d8e-bfd0-4241-a821-ccf0a6145cce" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="f238d77c-bd60-4c91-bfff-d22a584031bb" name="Negation" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="aa9e2150-675c-462d-98cb-a116290f38ba" />
+        <suppliersInternal>
+          <interfaceRealization Id="8b1820e1-db94-4b59-a20e-9db213e91192">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="4997f8dc-07ee-4065-8e33-c08f29e4c776" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="28f563f0-69c7-415c-8c3d-03f64605a470" name="Implication" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="198aae7b-921e-4dfb-a64b-fd6ec602a79c" />
+        <suppliersInternal>
+          <interfaceRealization Id="a6d72ee7-296d-4607-a0c0-12a2dcea185c">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="6f9483dd-b976-4c0e-bc18-7fa6be023074" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="b286b955-fd57-474d-a972-e80df1b470b6" name="LiteralExpression" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="6de83130-1f99-4e77-802d-61444eeaaa0b" />
+        <suppliersInternal>
+          <interfaceRealization Id="b5987eb2-7729-4230-9830-239bc2e56401">
+            <interfaceMoniker Id="dbb94064-a7c9-4feb-968e-6af734e19cfb" LastKnownName="IExpression" />
+            <elementDefinition Id="e34a22ff-1cba-42ef-b11e-7d017f6558e3" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="764de405-0906-403d-b28d-e5bcec2c1eb9" name="NegatedConjunction" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="0b6737d8-15f1-42b9-b2f4-89d149166ad0" />
+        <suppliersInternal>
+          <interfaceRealization Id="554c3f98-b54e-4b5d-b74b-3c3b99c2f242">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="bb6c8c30-097b-475b-8524-7e65ac901553" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="36fe76b5-b336-47ad-b0f6-f863e6127a10" name="NegatedDisjunction" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="be4ef986-c137-49ac-a27f-aacdbd120258" />
+        <suppliersInternal>
+          <interfaceRealization Id="f161de6d-f0f5-4b00-ad45-40f1bc64ef58">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="82d87255-c655-49fd-89c0-ad488e8e16ad" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="2643ed22-8c0d-46ea-879d-32c055076312" name="ExclusiveDisjunction" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="5ec7d4d1-d7e5-4de1-8726-c1f87177758b" />
+        <suppliersInternal>
+          <interfaceRealization Id="35be1e23-a39e-4233-8f80-3517d2c14e57">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="0a3eabf5-9deb-4967-b79a-3184e340cce1" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="b72c6931-3311-459f-925b-60d7d5f4ea5f" name="Always" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="806a80f3-1b95-471e-9d55-294450dc55bc" />
+        <suppliersInternal>
+          <interfaceRealization Id="55603051-c6f2-42ff-a535-ee59fcbf8c4f">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="e80588a6-4e92-4ade-a920-0895bb3a38e5" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="067a0d4d-df48-4c60-9f03-0776e1867af8" name="NextMoment" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="1c1b3faa-b348-4711-af1e-f4b2d349e6e5" />
+        <suppliersInternal>
+          <interfaceRealization Id="4f17cba5-6f77-4bcf-98db-0a6d6b49c5c0">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="2373bd04-1381-48f6-be92-23ad0e4e7d81" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="ec599479-d00b-4998-91b1-e0a77b09e4ec" name="Sometime" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="d20142d0-1e97-4d78-b7cf-41feb0c0a157" />
+        <suppliersInternal>
+          <interfaceRealization Id="9fb108fc-cdca-429c-9a5c-322182cc2418">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="3010c62b-466c-4019-b113-131c196c6316" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="2a04de68-c27e-48eb-8853-eb1080816c38" name="Equivalence" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="6118ed09-baf9-416c-bbd5-66e65fc89619" />
+        <suppliersInternal>
+          <interfaceRealization Id="81bdf13f-7505-4342-8777-ac8c3c5ca353">
+            <interfaceMoniker Id="17cc6378-fe57-4b7f-bc65-af704f7dc376" LastKnownName="IOperator" />
+            <elementDefinition Id="54bf387a-3f80-41ab-8202-1c48570e41aa" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+  </packagedElements>
+  <package Id="fc000acc-8dd1-4065-8be8-cf9cb080fb25" name="Prover.Modeling">
+    <elementDefinition Id="8b03c670-e902-4af2-ac49-18e72312368d" />
+    <profileInstances>
+      <packageHasProfileInstances Id="212196c8-65e8-47d0-aa37-7b23df89b886">
+        <profileInstance Id="daccef7d-1a1b-4c8f-89c5-200e849e8973" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="99ab896a-924c-46c9-928c-8c38aa7a01c0">
+        <profileInstance Id="1a299cd9-5f98-4ba1-be50-0b4b0a0129d2" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</logicalClassDesignerModel>

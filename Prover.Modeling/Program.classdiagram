@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="7de01b0c-732a-4993-8ab4-6c85a7bcb9fa" name="Program" linkedPackageId="068c9f99-a857-4e32-b5b4-e711e24b6f9f" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="a9946c60-dd6f-408a-a1a4-add3cbdc7dd4">
+      <profileInstance Id="8a13f8c4-8ec0-4786-966f-b885c1c252da" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="a1ea419f-6c3b-4877-94f4-e9f52f4a9eeb">
+      <profileInstance Id="0254c39f-3023-4aa1-ae02-4e993addec0b" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="d0988bb7-fdcf-411b-9aa3-6949a4a22c02" name="Parser" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="78021546-c4de-41d7-abb5-fc5c59032a11" />
+        <ownedOperationsInternal>
+          <operation Id="07ed4ea7-60d0-48ae-9244-b9d95f8d5abb" name="Parse" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="a3529221-ce36-4de6-b690-8ba9ba6da0c3" />
+            <ownedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="f7043820-55e8-4201-9b41-b009fd8ec5f4" name="text" direction="In" isUnique="false">
+                  <elementDefinition Id="13e0dd78-dbe4-43f6-a7ce-6130630722f8" />
+                  <type_NamedElement>
+                    <referencedTypeMoniker Id="22a6325c-36f9-4a7a-b0ce-4e73901d3c7a" LastKnownName="String" />
+                  </type_NamedElement>
+                </parameter>
+              </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="99ae91a6-fa9d-48bf-8415-5c49e2a72023" direction="Return">
+                  <elementDefinition Id="6fc6fb85-f4cc-4c66-bdd1-fdbdeab06bee" />
+                  <type_NamedElement>
+                    <referencedTypeMoniker Id="931f9721-eb74-4083-98ce-bdabf45b0849" LastKnownName="Expression" />
+                  </type_NamedElement>
+                </parameter>
+              </operationHasOwnedParameters>
+            </ownedParameters>
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <packageHasNamedElement>
+      <referencedType Id="22a6325c-36f9-4a7a-b0ce-4e73901d3c7a" name="String" isAbstract="false" isLeaf="false" cachedFullName="String">
+        <elementDefinition Id="59259974-6d55-42c6-b7bd-763d77ac8ef9" />
+      </referencedType>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <referencedType Id="931f9721-eb74-4083-98ce-bdabf45b0849" name="Expression" isAbstract="false" isLeaf="false" cachedFullName="Prover.Modeling::Expression">
+        <elementDefinition Id="5ceae92e-90a9-4a47-baf9-7fcd3c0f5129" />
+      </referencedType>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <referencedType Id="8cf38d09-cd5d-4133-9b3e-e0723c002bc4" name="Expression" isAbstract="false" isLeaf="false" cachedFullName="Prover.Modeling::Expression">
+        <elementDefinition Id="5ceae92e-90a9-4a47-baf9-7fcd3c0f5129" />
+      </referencedType>
+    </packageHasNamedElement>
+  </packagedElements>
+  <package Id="068c9f99-a857-4e32-b5b4-e711e24b6f9f" name="Prover.Modeling">
+    <elementDefinition Id="8b03c670-e902-4af2-ac49-18e72312368d" />
+  </package>
+</logicalClassDesignerModel>
