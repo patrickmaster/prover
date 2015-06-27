@@ -17,7 +17,10 @@ namespace Prover.UI.ViewModel
     class MainViewModel : ViewModelBase
     {
         private readonly GraphLayout _graphControl;
-        public readonly ObservableValue<string> Formula = new ObservableValue<string>();
+
+        readonly ObservableValue<string> _formula = new ObservableValue<string>();
+        
+        public ObservableValue<string> Formula { get { return _formula; } }
 
         private readonly IAlgorithm _algorithm = new SimpleAlgorithm();
 
@@ -25,7 +28,7 @@ namespace Prover.UI.ViewModel
 
         private BidirectionalGraph<object, IEdge<object>> _treeGraph =
             new BidirectionalGraph<object, IEdge<object>>();
-        
+
         public MainViewModel(GraphLayout graphControl)
         {
             _graphControl = graphControl;
