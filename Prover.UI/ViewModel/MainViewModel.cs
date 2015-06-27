@@ -37,7 +37,9 @@ namespace Prover.UI.ViewModel
 
         public void SolveInline()
         {
-            IExpression expression = _parser.Parse(Formula.Value);
+            //IExpression expression = _parser.Parse(Formula.Value);
+            _parser.Parse(Formula.Value);
+            IExpression expression = _parser.Compute();
             SolveExpression(expression);
         }
 

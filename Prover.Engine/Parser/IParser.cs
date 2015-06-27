@@ -5,7 +5,8 @@ namespace Prover.Engine.Parser
 {
     public interface IParser
     {
-        IExpression Parse(string expression);
+        IExpression Compute();
+        string Parse(string expression);
 
         IExpression Parse(Stream stream);
     }
