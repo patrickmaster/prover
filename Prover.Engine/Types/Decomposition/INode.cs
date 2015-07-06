@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Engine.Types.Decomposition
@@ -7,14 +8,22 @@ namespace Prover.Engine.Types.Decomposition
     {
         IExpression GetExpression();
 
+        IEnumerable<IExpression> GetAllExpressions();
+
         INode CreateNode(IExpression expressionOne, IExpression expressionTwo);
         
-        IEnumerable<INode> Branch(IExpression expressionOne, IExpression expressionTwo);
+        IEnumerable<INode> CreateBranch(IExpression expressionOne, IExpression expressionTwo);
+
+        IEnumerable<IConnection> Children { get; }
+
+        INode Parent { get; }
 
         bool CanDecompose { get; }
 
         bool HasNonLiterals { get; }
 
         bool IsClosed { get; }
+
+        bool IsBranchClosed { get; }
     }
 }

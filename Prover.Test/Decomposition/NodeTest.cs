@@ -4,17 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Prover.Engine.Decomposition;
 using Prover.Engine.Types.Decomposition;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Test.Decomposition
 {
     [TestClass]
-    public class Node_test
+    public class NodeTest
     {
         private IExpression _decomposeableAlphaNegation;
         private IExpression _decomposeableComplexAlphaNegation;
         private IExpression _nonDecomposeableNegation;
+
+        private INodeFactory _nodeFactory;
 
         [TestInitialize]
         public void Init()
@@ -27,12 +30,14 @@ namespace Prover.Test.Decomposition
                 new Conjunction(
                     new Disjunction(new Literal("p"), new Literal("q")), 
                     new Literal("p")));
+
+            _nodeFactory = new SimpleNodeFactory();
         }
 
         [TestMethod]
         public void GetExpressionDecomposable()
         {
-            INode node = new Node(_decomposeableAlphaNegation);
+            INode node = _nodeFactory.CreateNode(_decomposeableAlphaNegation);
 
             Assert.IsTrue(node.CanDecompose);
             Assert.IsTrue(node.HasNonLiterals);
@@ -45,7 +50,7 @@ namespace Prover.Test.Decomposition
         [ExpectedException(typeof (InvalidOperationException))]
         public void GetExpressionNonDecomposeable()
         {
-            INode node = new Node(_nonDecomposeableNegation);
+            INode node = _nodeFactory.CreateNode(_nonDecomposeableNegation);
 
             Assert.IsFalse(node.CanDecompose);
             Assert.IsFalse(node.HasNonLiterals);
@@ -56,7 +61,7 @@ namespace Prover.Test.Decomposition
         [TestMethod]
         public void CreateNode()
         {
-            INode node = new Node(_decomposeableAlphaNegation);
+            INode node = _nodeFactory.CreateNode(_decomposeableAlphaNegation);
             IExpression expression = node.GetExpression();
             DecompositionResult result = expression.Decompose();
 
@@ -68,12 +73,12 @@ namespace Prover.Test.Decomposition
         [TestMethod]
         public void CreateBranch()
         {
-            INode node = new Node(_decomposeableComplexAlphaNegation);
+            INode node = _nodeFactory.CreateNode(_decomposeableComplexAlphaNegation);
             IExpression expression = node.GetExpression();
             DecompositionResult result = expression.Decompose();
 
             Assert.AreEqual(DecompositionType.Beta, result.Type);
-            IEnumerable<INode> descendants = node.Branch(result.LeftExpression, result.RightExpression);
+            IEnumerable<INode> descendants = node.CreateBranch(result.LeftExpression, result.RightExpression);
 
             Assert.AreEqual(2, descendants.Count());
 

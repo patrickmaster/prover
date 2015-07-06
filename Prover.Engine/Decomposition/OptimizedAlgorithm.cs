@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using Prover.Engine.Types.Decomposition;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Engine.Decomposition
 {
-    internal class SimpleAlgorithm : Algorithm
+    internal class OptimizedAlgorithm : Algorithm
     {
         public override AlgorithmResult Solve(IExpression rootExpression)
         {
@@ -14,7 +16,7 @@ namespace Prover.Engine.Decomposition
             List<IConnection> connections = new List<IConnection>();
             Stack<INode> toDecompose = new Stack<INode>();
 
-            INode rootNode = new SimpleNode(null, new Negation(rootExpression));
+            INode rootNode = new OptimizedNode(null, new Negation(rootExpression));
             toDecompose.Push(rootNode);
             nodes.Add(rootNode);
 
@@ -45,28 +47,39 @@ namespace Prover.Engine.Decomposition
 
                 foreach (INode node in decomposedNodes)
                 {
-                    if (node.CanDecompose)
-                    {
-                        toDecompose.Push(node);
-                    }
+                    nodes.Add(node);
 
                     ((Node)node).IsBranchClosed = true;
-                    nodes.Add(node);
+                    
+                    if (!node.IsClosed)
+                    {
+                        if (node.CanDecompose)
+                        {
+                            toDecompose.Push(node);
+                        }
+                        else
+                        {
+                            // this node is still open and cannot be further decomposed,
+                            // there is no point in further processing the tree
+                            ((Node) node).IsBranchClosed = false;
+                            MarkNodeAndParentsOpen((Node) node);
+
+                            return new AlgorithmResult
+                            {
+                                Connections = connections,
+                                Nodes = nodes,
+                                IsTautology = false
+                            };
+                        }
+                    }
                 }
-            }
-
-            IEnumerable<INode> openNodes = nodes.Where(x => !x.HasNonLiterals && !x.IsClosed);
-
-            foreach (INode openNode in openNodes)
-            {
-                MarkNodeAndParentsOpen((Node) openNode);
             }
 
             return new AlgorithmResult
             {
                 Connections = connections,
                 Nodes = nodes,
-                IsTautology = !openNodes.Any()
+                IsTautology = true
             };
         }
     }

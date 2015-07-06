@@ -11,7 +11,7 @@ using Prover.Engine.Types.Expression;
 namespace Prover.Test.Expression
 {
     [TestClass]
-    public class Negation_test
+    public class NegationTest
     {
         [TestMethod]
         public void NegatedDisjunction()

@@ -34,7 +34,7 @@ namespace Prover.Engine.Types.Expression
 
         public override string ToString()
         {
-            return "( " + LeftOperand + " and " + RightOperand + " )";
+            return "( " + LeftOperand + " & " + RightOperand + " )";
         }
     }
 }

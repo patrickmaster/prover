@@ -1,0 +1,54 @@
+﻿<Window x:Class="Prover.UI.OperatorSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:Prover.UI"
+        ResizeMode="NoResize"
+        Title="Operatory" Height="430" Width="300">
+    <Window.Resources>
+        <RoutedUICommand x:Key="Commands.Confirm"></RoutedUICommand>
+        <RoutedUICommand x:Key="Commands.Cancel"></RoutedUICommand>
+    </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{StaticResource Commands.Confirm}" />
+        <KeyBinding Key="Escape" Command="{StaticResource Commands.Cancel}"/>
+    </Window.InputBindings>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource Commands.Confirm}"
+                        CanExecute="Confirm_CanExecute"
+                        Executed="Confirm_OnExecuted"></CommandBinding>
+        <CommandBinding Command="{StaticResource Commands.Cancel}"
+                        Executed="Cancel_OnExecuted"></CommandBinding>
+        <CommandBinding Command="Open" Executed="Open_OnExecuted"></CommandBinding>
+        <CommandBinding Command="Save" Executed="Save_OnExecuted"></CommandBinding>
+    </Window.CommandBindings>
+    <Grid>
+        <StackPanel>
+            <Menu>
+                <MenuItem Header="Plik">
+                    <MenuItem Header="Otwórz" Command="Open"></MenuItem>
+                    <MenuItem Header="Zapisz" Command="Save"></MenuItem>
+                </MenuItem>
+            </Menu>
+            <StackPanel>
+                <ui:OperatorConfigurationControl Label="Negacja" Configuration="{Binding Config.Negation}"/>
+                <ui:OperatorConfigurationControl Label="Koniunkcja" Configuration="{Binding Config.Conjunction}"/>
+                <ui:OperatorConfigurationControl Label="Alternatywa" Configuration="{Binding Config.Disjunction}"/>
+                <ui:OperatorConfigurationControl Label="Zaprzeczona koniunkcja" Configuration="{Binding Config.NegatedConjunction}"/>
+                <ui:OperatorConfigurationControl Label="Zaprzeczona alternatywa" Configuration="{Binding Config.NegatedDisjunction}"/>
+                <ui:OperatorConfigurationControl Label="Implikacja" Configuration="{Binding Config.Implication}"/>
+                <ui:OperatorConfigurationControl Label="Równoważność" Configuration="{Binding Config.Equivalence}"/>
+                <ui:OperatorConfigurationControl Label="Alternatywa wykluczająca" Configuration="{Binding Config.ExclusiveOr}"/>
+                <ui:OperatorConfigurationControl Label="Zawsze" Configuration="{Binding Config.Always}"/>
+                <ui:OperatorConfigurationControl Label="Kiedyś" Configuration="{Binding Config.Sometime}"/>
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Margin="3"  Command="{StaticResource Commands.Confirm}">Zapisz</Button>
+                <Button Grid.Column="1" Margin="3" Command="{StaticResource Commands.Cancel}">Anuluj</Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -8,8 +8,9 @@ namespace Prover.Engine.Types.Expression
 {
     public abstract class BinaryOperator : Operator
     {
-        protected readonly IExpression LeftOperand;
-        protected readonly IExpression RightOperand;
+        public IExpression LeftOperand { get; private set; }
+        
+        public IExpression RightOperand { get; private set; }
 
         protected BinaryOperator(IExpression leftOperand, IExpression rightOperand)
         {

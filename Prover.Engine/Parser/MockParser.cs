@@ -10,136 +10,143 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Prover.Engine.Types;
 
 namespace Prover.Engine.Parser
 {
     public class MockParser : IParser
     {
+        private readonly OperatorsConfig _operatorsConfig;
         private Hashtable precidence = new Hashtable();
-        public  List<Token> calc_list = new List<Token>();
+        public List<Tok> calc_list = new List<Tok>();
         private Dictionary<string, string> data_store = new Dictionary<string, string>();
-        
+
         private enum type { num = 0, var, op, neg };
 
-        public MockParser()
-        {        
-            precidence.Add("~", 1); //zaprzeczenie
-            precidence.Add("&", 2); //koniunkcja
-            precidence.Add("|", 2); //alternatywa
-            precidence.Add("+", 2); //alternatywa wykluczająca
-            precidence.Add(">", 3); //implikacja
-            precidence.Add("=", 3); //rownowaznosc
-            precidence.Add("!", 2); //zawsze 
-            precidence.Add("?", 2); //czasami
+        public MockParser(OperatorsConfig operatorsConfig)
+        {
+            _operatorsConfig = operatorsConfig;
+            precidence.Add(operatorsConfig.Negation.Symbol, operatorsConfig.Negation.Priority); //zaprzeczenie
+            precidence.Add(operatorsConfig.Conjunction.Symbol, operatorsConfig.Conjunction.Priority); //koniunkcja
+            precidence.Add(operatorsConfig.Disjunction.Symbol, operatorsConfig.Disjunction.Priority); //alternatywa
+            precidence.Add(operatorsConfig.ExclusiveOr.Symbol, operatorsConfig.ExclusiveOr.Priority); //alternatywa wykluczająca
+            precidence.Add(operatorsConfig.Implication.Symbol, operatorsConfig.Implication.Priority); //implikacja
+            precidence.Add(operatorsConfig.Equivalence.Symbol, operatorsConfig.Equivalence.Priority); //rownowaznosc
+            precidence.Add(operatorsConfig.Always.Symbol, operatorsConfig.Always.Priority); //zawsze 
+            precidence.Add(operatorsConfig.Sometime.Symbol, operatorsConfig.Sometime.Priority); //czasami
         }
 
-        public string Parse(string expression){
+        public IExpression Parse(string expression)
+        {
             bool rtn = RPN(expression) == true ? true : false;
-            return rtn == true ? "success" : "failed";
+            return Compute();
+            //return rtn == true ? "success" : "failed";
         }
-        // from text
-        //public IExpression Parse(string expression)
-        //{
-        //    expression = "dupa";
-        //    // we expect IExpression object to be returned
 
-        //    return new Implication(
-        //        new Implication(new Literal("p"), new Literal("q")),
-        //        new Disjunction(new Negation(new Literal("p")), new Literal("q")));
-        //}
-
-        public IExpression Compute(){
+        private IExpression Compute()
+        {
             Stack<TokenExpr> compu_stack = new Stack<TokenExpr>();
-            try{
-                foreach(Token tok in calc_list){
+            try
+            {
+                foreach (Tok tok in calc_list)
+                {
                     TokenExpr res = new TokenExpr();
-                    
-                    if(tok._class == (int)type.num || tok._class == (int)type.var){
+
+                    if (tok._class == (int)type.num || tok._class == (int)type.var)
+                    {
                         Console.WriteLine(tok.repr);
-                        TokenExpr tokexpr = new TokenExpr(tok._class, tok.repr);
+                        TokenExpr tokexpr = new TokenExpr(tok.repr);
                         compu_stack.Push(tokexpr);
                     }
-                    else if(tok._class == (int)type.op){
-
+                    else if (tok._class == (int)type.op)
+                    {
                         TokenExpr rhs = compu_stack.Pop();
-                        TokenExpr lhs = compu_stack.Pop();
-
-                        switch (tok.repr)
+                        
+                        if (tok.repr == _operatorsConfig.Conjunction.Symbol)
                         {
-                            case "&":
-                                //res.repr = (double.Parse(GetValue(lhs)) + double.Parse(GetValue(rhs))).ToString();
-                                //compu_stack.Push(res);
-                                res.repr = new Conjunction(lhs.repr, rhs.repr);
-                                compu_stack.Push(res);
-                                break;
-                            case "|":
-                                //res.repr = (double.Parse(GetValue(lhs)) + double.Parse(GetValue(rhs))).ToString();
-                                //compu_stack.Push(res);
-                                res.repr = new Disjunction(lhs.repr, rhs.repr);
-                                compu_stack.Push(res);
-                                break;
-                            case ">":
-                                //res.repr = (double.Parse(GetValue(lhs)) + double.Parse(GetValue(rhs))).ToString();
-                                //compu_stack.Push(res);
-                                res.repr = new Implication(lhs.repr, rhs.repr);
-                                compu_stack.Push(res);
-                                break;
-                            case "=":
-                                //res.repr = (double.Parse(GetValue(lhs)) + double.Parse(GetValue(rhs))).ToString();
-                                //compu_stack.Push(res);
-                                res.repr = new Equivalence(lhs.repr, rhs.repr);
-                                compu_stack.Push(res);
-                                break;
-                            case "+":
-                                //res.repr = (double.Parse(GetValue(lhs)) + double.Parse(GetValue(rhs))).ToString();
-                                //compu_stack.Push(res);
-                                res.repr = new ExclusiveOr(lhs.repr, rhs.repr);
-                                compu_stack.Push(res);
-                                break;
-                            default:
-                                //return double.Parse(compu_stack.Pop().repr);
-                                //compu_stack.Pop();
-                                calc_list.Clear();
-                                MessageBox.Show("Nieznany operator");
-                                return new Conjunction(new Literal("0"), new Literal("0"));
+                            res.repr = new Conjunction(compu_stack.Pop().repr, rhs.repr);
                         }
+                        else if (tok.repr == _operatorsConfig.Disjunction.Symbol)
+                        {
+                            res.repr = new Disjunction(compu_stack.Pop().repr, rhs.repr);
+                        }
+                        else if (tok.repr == _operatorsConfig.Implication.Symbol)
+                        {
+                            res.repr = new Implication(compu_stack.Pop().repr, rhs.repr);
+                        }
+                        else if (tok.repr == _operatorsConfig.Equivalence.Symbol)
+                        {
+                            res.repr = new Equivalence(compu_stack.Pop().repr, rhs.repr);
+                        }
+                        else if (tok.repr == _operatorsConfig.ExclusiveOr.Symbol)
+                        {
+                            res.repr = new ExclusiveOr(compu_stack.Pop().repr, rhs.repr);
+                        }
+                        else if (tok.repr == _operatorsConfig.Always.Symbol)
+                        {
+                            res.repr = new Always(rhs.repr);
+                        }
+                        else if (tok.repr == _operatorsConfig.Sometime.Symbol)
+                        {
+                            res.repr = new Sometime(rhs.repr);
+                        }
+                        //else if (tok.repr == _operatorsConfig.Negation.Symbol)
+                        //{
+                        //    res.repr = new Negation(rhs.repr);
+                        //}
+                        else
+                        {
+                            calc_list.Clear();
+                            MessageBox.Show("Nieznany operator");
+                            return new Conjunction(new Literal("0"), new Literal("0"));
+                        }
+
+                        compu_stack.Push(res);
                     }
-                    else if (tok._class == (int)type.neg){
+                    else if (tok._class == (int)type.neg)
+                    {
                         TokenExpr expr = compu_stack.Pop();
                         res.repr = new Negation(expr.repr);
                         compu_stack.Push(res);
 
                     }
-                }                     
+                }
                 //return double.Parse(GetValue(compu_stack.Pop()));
                 IExpression result = compu_stack.Pop().repr;
                 calc_list.Clear();
                 return result;
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 calc_list.Clear();
                 MessageBox.Show("Problem z analizą wejścia." + e);
                 return new Conjunction(new Literal("0"), new Literal("0"));
             }
         }
 
-        private string GetValue(Token input){
-            if(input._class == (int)type.num){
+        private string GetValue(Tok input)
+        {
+            if (input._class == (int)type.num)
+            {
                 return input.repr;
-            }else{
-                return  data_store[input.repr].ToString();
+            }
+            else
+            {
+                return data_store[input.repr].ToString();
             }
         }
 
-        private bool RPN(string expression){
+        private bool RPN(string expression)
+        {
             //Regex reg = new Regex(@"\[\b[A-Za-z]+\b(?![\d])\]|[\~\+\-/\*]|[\d]+(\.[\d]+)?|[()]");
             Regex reg = new Regex(@"[\&\|\>\=\+FG]|\b[A-Za-z]+|[()]");
-            Stack<Token> op_stack = new Stack<Token>();
+            Stack<Tok> op_stack = new Stack<Tok>();
 
             try
             {
                 foreach (Match token in reg.Matches(expression))
                 {
-                    Token tok = new Token();
+                    Tok tok = new Tok();
                     string value = token.Captures[0].Value;
                     Console.WriteLine("foricz" + value);
 
@@ -202,12 +209,14 @@ namespace Prover.Engine.Parser
                     }
                 }
             }
-            catch (System.ArgumentNullException){
+            catch (System.ArgumentNullException)
+            {
                 MessageBox.Show("Wejście jest puste lub zawiera niedozwolone znaki.");
                 return false;
             }
 
-            while(op_stack.Count != 0){
+            while (op_stack.Count != 0)
+            {
                 calc_list.Add(op_stack.Pop());
             }
 
@@ -215,7 +224,8 @@ namespace Prover.Engine.Parser
         }
 
 
-        private bool IsOperator(string arg){
+        private bool IsOperator(string arg)
+        {
             return new Regex(@"[\&\|\>\=\+FG]").Match(arg).Success;
         }
 
@@ -224,41 +234,38 @@ namespace Prover.Engine.Parser
             return new Regex(@"[\~]").Match(arg).Success;
         }
 
-        private bool IsVariable(string arg){
+        private bool IsVariable(string arg)
+        {
             return new Regex(@"\b[A-Za-z]+").Match(arg).Success;
         }
 
-        private bool HasPrecidenceOrEqual(string lhs, string rhs){
+        private bool HasPrecidenceOrEqual(string lhs, string rhs)
+        {
             return ((int)precidence[lhs] >= (int)precidence[rhs]);
-        }           
-
-
-
+        }
 
         // from file
         public IExpression Parse(Stream stream)
         {
             return new Implication(
-                new Implication(new Conjunction( new Literal("p"), new Negation(new Literal("r"))), new Literal("q")),
+                new Implication(new Conjunction(new Literal("p"), new Negation(new Literal("r"))), new Literal("q")),
                 new Disjunction(new Negation(new Literal("p")), new Literal("q")));
         }
     }
 
-    public struct Token
+    public struct Tok
     {
         public int _class;
         public string repr;
     }
+
     public struct TokenExpr
     {
-        //public int _class;
         public IExpression repr;
-        public TokenExpr(int cls, string expr)
+        
+        public TokenExpr(string expr)
         {
-            //_class = cls;
             repr = new Literal(expr);
         }
-
-
     }
 }

@@ -1,20 +1,25 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Engine.Types.Decomposition
 {
-    public class Node : INode
+    internal abstract class Node : INode
     {
-        private readonly List<IExpression> _expressions = new List<IExpression>();
-        private readonly List<IExpression> _workingExpressions = new List<IExpression>();
-
         private int _nonLiteralsCount;
         private bool _isDecomposed;
 
-        public Node(IExpression expression)
+        protected readonly List<IExpression> _expressions = new List<IExpression>();
+        private readonly List<IExpression> _workingExpressions = new List<IExpression>();
+
+        public bool CanDecompose { get { return HasNonLiterals && !_isDecomposed; } }
+
+        public bool HasNonLiterals { get { return _nonLiteralsCount > 0; } }
+
+        protected Node(INode parent, IExpression expression)
         {
+            _parent = parent;
             _expressions.Add(expression);
             _workingExpressions.Add(expression);
             if (!expression.IsLiteral)
@@ -23,8 +28,9 @@ namespace Prover.Engine.Types.Decomposition
             }
         }
 
-        private Node(IEnumerable<IExpression> expressions, IExpression expressionOne)
+        protected Node(INode parent, IEnumerable<IExpression> expressions, IExpression expressionOne)
         {
+            _parent = parent;
             _expressions.AddRange(expressions);
             _expressions.Add(expressionOne);
             _workingExpressions.AddRange(expressions);
@@ -33,8 +39,9 @@ namespace Prover.Engine.Types.Decomposition
             _nonLiteralsCount = _expressions.Count(x => !x.IsLiteral);
         }
 
-        private Node(IEnumerable<IExpression> expressions, IExpression expressionOne, IExpression expressionTwo)
+        protected Node(INode parent, IEnumerable<IExpression> expressions, IExpression expressionOne, IExpression expressionTwo)
         {
+            _parent = parent;
             _expressions.AddRange(expressions);
             _expressions.Add(expressionOne);
             _expressions.Add(expressionTwo);
@@ -58,6 +65,11 @@ namespace Prover.Engine.Types.Decomposition
             return expression;
         }
 
+        public IEnumerable<IExpression> GetAllExpressions()
+        {
+            return _expressions;
+        }
+
         public INode CreateNode(IExpression expressionOne, IExpression expressionTwo)
         {
             if (_isDecomposed)
@@ -68,15 +80,17 @@ namespace Prover.Engine.Types.Decomposition
             if (expressionOne == null) throw new ArgumentNullException("expressionOne");
 
             INode result = expressionTwo == null ? 
-                new Node(_workingExpressions, expressionOne) : 
-                new Node(_workingExpressions, expressionOne, expressionTwo);
+                CreateNode(this, _workingExpressions, expressionOne) : 
+                CreateNode(this, _workingExpressions, expressionOne, expressionTwo);
 
             _isDecomposed = true;
             
+            _children.Add(new Connection(this, result));
+
             return result;
         }
 
-        public IEnumerable<INode> Branch(IExpression expressionOne, IExpression expressionTwo)
+        public IEnumerable<INode> CreateBranch(IExpression expressionOne, IExpression expressionTwo)
         {
             if (expressionOne == null) throw new ArgumentNullException("expressionOne");
             if (expressionTwo == null) throw new ArgumentNullException("expressionTwo");
@@ -87,68 +101,60 @@ namespace Prover.Engine.Types.Decomposition
 
             _isDecomposed = true;
 
-            return new List<INode>
+            List<INode> result = new List<INode>
             {
-                new Node(_workingExpressions, expressionOne), 
-                new Node(_workingExpressions, expressionTwo)
+                CreateNode(this, _workingExpressions, expressionOne),
+                CreateNode(this, _workingExpressions, expressionTwo)
             };
+
+            result.ForEach(x => _children.Add(new Connection(this, x)));
+
+            return result;
         }
 
-        public bool CanDecompose { get { return HasNonLiterals && !_isDecomposed; } }
+        readonly List<IConnection> _children = new List<IConnection>(2);
 
-        public bool HasNonLiterals { get { return _nonLiteralsCount > 0; } }
+        public IEnumerable<IConnection> Children { get { return _children; } }
 
-        public override string ToString()
+        private readonly INode _parent;
+
+        public INode Parent { get { return _parent; } }
+
+        protected static bool CheckIfComplementary(IExpression one, IExpression another)
         {
-            return string.Join(", ", _expressions);
+            string symbolOne = one.ToString();
+            string symbolAnother = another.ToString();
+
+            return (symbolOne.Length > symbolAnother.Length && symbolOne == "~ " + symbolAnother
+                    || symbolOne.Length < symbolAnother.Length && "~ " + symbolOne == symbolAnother);
         }
+
+        protected abstract Node CreateNode(INode parent, IEnumerable<IExpression> expressions, IExpression expressionOne);
+
+        protected abstract Node CreateNode(INode parent, IEnumerable<IExpression> expressions, IExpression expressionOne, IExpression expressionTwo);
 
         private bool? _isClosed;
-        
+
         public bool IsClosed
         {
             get
             {
                 if (_isClosed == null)
                 {
-                    CheckIfClosed();
+                    _isClosed = CheckIfClosed();
                 }
 
-                return _isClosed.HasValue && (bool) _isClosed;
+                return (bool)_isClosed;
             }
         }
 
-        private void CheckIfClosed()
+        public bool IsBranchClosed { get; set; }
+
+        protected abstract bool CheckIfClosed();
+
+        public override string ToString()
         {
-            if (HasNonLiterals)
-            {
-                return;
-            }
-
-            for (int i = 0; i < _expressions.Count() - 1; i++)
-            {
-                IExpression one = _expressions[i];
-                for (int j = i + 1; j < _expressions.Count(); j++)
-                {
-                    IExpression another = _expressions[j];
-
-                    if (CheckIfComplementary(one, another))
-                    {
-                        _isClosed = true;
-                        return;
-                    }
-                }
-            }
-        }
-
-        private bool CheckIfComplementary(IExpression one, IExpression another)
-        {
-            string symbolOne = one.ToString();
-            string symbolAnother = another.ToString();
-
-            return (symbolOne.Length > symbolAnother.Length && symbolOne == "not " + symbolAnother
-                || symbolOne.Length < symbolAnother.Length && "not " + symbolOne == symbolAnother);
-
+            return string.Join(", ", _expressions);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using Prover.Engine.Types;
+using Prover.Engine.Types.Decomposition;
 using Prover.UI.ViewModel;
 
 namespace Prover.UI
@@ -55,6 +58,59 @@ namespace Prover.UI
             {
                 _viewModel.OpenFormulaFromFile(dialog.FileName);
             }
+        }
+
+        private void OperatorsConfiguration_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _viewModel.OpenOperatorsConfigWindow();
+        }
+
+        private void INode_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            Debug.WriteLine("node clicked");
+
+            INode node = ((StackPanel)sender).DataContext as INode;
+
+            if (node != null)
+            {
+                _viewModel.SetContext(node);
+            }
+        }
+
+        private void Close_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void INode_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void LoadNodeChildren_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _viewModel.LoadChildren(e.Parameter as INode);
+        }
+
+        private void LoadNodeNeighbours_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !_viewModel.IsFullGraphRendered;
+        }
+
+        private void LoadNodeAncestors_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _viewModel.LoadAncestors(e.Parameter as INode);
+        }
+
+        private void LoadRoot_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _viewModel.LoadRoot();
+        }
+
+        private void LoadRoot_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !_viewModel.IsFullGraphRendered && !_viewModel.IsRootRendered;
         }
     }
 }

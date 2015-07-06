@@ -30,7 +30,7 @@ namespace Prover.Engine.Types.Expression
 
         public override string ToString()
         {
-            return "sometime " + Operand;
+            return "? " + Operand;
         }
     }
 }

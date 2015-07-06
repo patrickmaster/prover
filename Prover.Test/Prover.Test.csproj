@@ -50,10 +50,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Algorithm\SimpleAlgorithm_test.cs" />
-    <Compile Include="Decomposition\Complementary_test.cs" />
-    <Compile Include="Decomposition\Node_test.cs" />
-    <Compile Include="Expression\Negation_test.cs" />
+    <Compile Include="Algorithm\SimpleAlgorithmTest.cs" />
+    <Compile Include="Decomposition\ComplementaryTest.cs" />
+    <Compile Include="Decomposition\NodeTest.cs" />
+    <Compile Include="Expression\NegationTest.cs" />
+    <Compile Include="Parser\GreedyOperatorsTest.cs" />
+    <Compile Include="Parser\NonstandardPrioritiesTest.cs" />
+    <Compile Include="Parser\StandardPrioritiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

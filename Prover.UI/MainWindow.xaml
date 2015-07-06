@@ -1,55 +1,184 @@
 ﻿<Window x:Class="Prover.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:prover="clr-namespace:Prover.UI.ViewModel"
+        xmlns:converters="clr-namespace:Prover.UI.Converters"
+        xmlns:graph="clr-namespace:Prover.UI.Graph"
+        xmlns:engine="clr-namespace:Prover.Engine.Types.Decomposition;assembly=Prover.Engine"
         xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+        xmlns:zoom="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
         ResizeMode="CanResize"
-        Title="MainWindow" MinHeight="350" MinWidth="525">
+        Title="Prover" MinHeight="350" MinWidth="525">
     <Window.Resources>
         <RoutedUICommand x:Key="Commands.SolveInline"></RoutedUICommand>
+        <RoutedUICommand x:Key="Commands.OperatorsConfiguration"></RoutedUICommand>
+        <RoutedCommand x:Key="Commands.LoadNodeChildren"></RoutedCommand>
+        <RoutedCommand x:Key="Commands.LoadNodeAncestors"></RoutedCommand>
+        <RoutedCommand x:Key="Commands.LoadRoot"></RoutedCommand>
+
+        <converters:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter" />
+        <converters:NodeToBackgroundConverter x:Key="NodeToBackgroundConverter" />
+        <converters:NodeToBorderConverter x:Key="NodeToBorderConverter" />
+
+        <DataTemplate x:Key="NodeTemplate" DataType="{x:Type engine:INode}">
+            <StackPanel 
+                x:Name="Panel"
+                Orientation="Horizontal" 
+                MouseRightButtonDown="INode_MouseRightButtonDown"
+                MouseLeftButtonDown="INode_MouseLeftButtonDown" 
+                DataContext="{Binding}">
+                <TextBlock Width="10" Height="10"></TextBlock>
+                
+                <StackPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Załaduj dzieci" Command="{StaticResource Commands.LoadNodeChildren}" CommandParameter="{Binding}"></MenuItem>
+                        <MenuItem Header="Załaduj korzeń" Command="{StaticResource Commands.LoadRoot}" CommandParameter="{Binding}"></MenuItem>
+                        <!--<MenuItem Header="Załaduj przodków" Command="{StaticResource Commands.LoadNodeAncestors}" CommandParameter="{Binding}"></MenuItem>-->
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+            </StackPanel>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type graphsharp:VertexControl}">
+            <Style.Resources>
+                <ToolTip x:Key="TooltipContent">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        
+                        <Label Grid.Column="0" Grid.Row="0">Nie-literały</Label>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding HasNonLiterals, Converter={StaticResource BooleanToYesNoConverter}}" Margin="5"></TextBlock>
+
+                        <Label Grid.Column="0" Grid.Row="1">Zamknięty</Label>
+                        <TextBlock 
+                            Grid.Column="1" Grid.Row="1" Text="{Binding IsClosed, Converter={StaticResource BooleanToYesNoConverter}}"
+                            Margin="5"></TextBlock>
+                    </Grid>
+                </ToolTip>
+            </Style.Resources>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type graphsharp:VertexControl}">
+                        <Border BorderBrush="{Binding Converter={StaticResource NodeToBorderConverter}}" 
+                                Background="{Binding Converter={StaticResource NodeToBackgroundConverter}}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="0">
+                            <ContentPresenter Content="{TemplateBinding Vertex}" 
+                                ContentTemplate="{StaticResource NodeTemplate}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ToolTip" Value="{StaticResource TooltipContent}"></Setter>
+        </Style>
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="Open"
                         CanExecute="Open_CanExecute"
                         Executed="Open_Executed" />
+        <CommandBinding Command="Close"
+                        Executed="Close_OnExecuted"/>
         <CommandBinding Command="{StaticResource Commands.SolveInline}"
                         CanExecute="SolveInline_CanExecute"
                         Executed="SolveInline_Executed"></CommandBinding>
+        <CommandBinding Command="{StaticResource Commands.OperatorsConfiguration}"
+                        Executed="OperatorsConfiguration_Executed"></CommandBinding>
+        <CommandBinding Command="{StaticResource Commands.LoadNodeChildren}"
+                        Executed="LoadNodeChildren_Executed"
+                        CanExecute="LoadNodeNeighbours_CanExecute" />
+        <CommandBinding Command="{StaticResource Commands.LoadNodeAncestors}"
+                        Executed="LoadNodeAncestors_Executed"
+                        CanExecute="LoadNodeNeighbours_CanExecute"/>
+        <CommandBinding Command="{StaticResource Commands.LoadRoot}"
+                        Executed="LoadRoot_Executed"
+                        CanExecute="LoadRoot_CanExecute"/>
     </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Command="{StaticResource Commands.OperatorsConfiguration}"
+                    Gesture="CTRL+I"></KeyBinding>
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Plik">
-                <MenuItem Header="Otwórz" Command="Open"/>
-                <MenuItem Header="Zapisz" Command="Save"/>
-                <MenuItem Header="Zapisz jako" Command="SaveAs" />
+                <!--<MenuItem Header="Otwórz" Command="Open"/>-->
                 <MenuItem Header="Wyjdź" Command="Close"/>
             </MenuItem>
-            <MenuItem Header="Drzewo"></MenuItem>
+            <!--<MenuItem Header="Drzewo"></MenuItem>-->
             <MenuItem Header="Narzędzia">
-                <MenuItem Header="Ustawienia"/>
+                <MenuItem Header="Ustawienia operatorów" Command="{StaticResource Commands.OperatorsConfiguration}"/>
             </MenuItem>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <graphsharp:GraphLayout x:Name="Graph" Grid.Column="0"
+            <zoom:ZoomControl Grid.Column="0">
+                <graph:ProverGraphLayout x:Name="Graph"
                                     Graph="{Binding}"
                                     LayoutAlgorithmType="Tree" 
                                     OverlapRemovalAlgorithmType="FSA" />
+            </zoom:ZoomControl>
             <StackPanel Grid.Column="1">
-                <TextBlock Text="Formuła"></TextBlock>
-                <TextBox Height="100" TextWrapping="Wrap">
+                <TextBlock Text="Formuła" Margin="3"></TextBlock>
+                <TextBox Height="100" TextWrapping="Wrap" Margin="3" FontFamily="Consolas" AcceptsReturn="True">
                     <TextBox.Text>
-                        <Binding Path="Formula.Value"></Binding>
+                        <Binding Path="Formula.Value" UpdateSourceTrigger="PropertyChanged"></Binding>
                     </TextBox.Text>
                     <TextBox.InputBindings>
                         <KeyBinding Command="{StaticResource Commands.SolveInline}"
                                     Gesture="CTRL+ENTER"></KeyBinding>
                     </TextBox.InputBindings>
                 </TextBox>
-                <Button Command="{StaticResource Commands.SolveInline}">Rozwiąż</Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0">Algorytm</Label>
+                    <ComboBox 
+                        x:Name="CbAlgorithmType" Grid.Column="1" 
+                        Margin="3"
+                        SelectedItem="{Binding AlgorithmType}" SelectedIndex="0">
+                        <ComboBoxItem Content="Prosty"></ComboBoxItem>
+                        <ComboBoxItem Content="Zoptymalizowany"></ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+                <Button Command="{StaticResource Commands.SolveInline}" Margin="3">Rozwiąż</Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0">Czas [ms]</Label>
+                    <TextBox 
+                        Grid.Column="1" Grid.Row="0" IsReadOnly="True" Margin="3"
+                        Text="{Binding SolvingTime}"></TextBox>
+                    <Label Grid.Column="0" Grid.Row="1">Węzłów</Label>
+                    <TextBox 
+                        Grid.Column="1" Grid.Row="1" IsReadOnly="True" Margin="3"
+                        Text="{Binding NodesCount}"></TextBox>
+                    <Label Grid.Column="0" Grid.Row="2">Tautologia?</Label>
+                    <TextBox 
+                        Grid.Column="1" Grid.Row="2" IsReadOnly="True" Margin="3"
+                        Text="{Binding IsTautology, Converter={StaticResource BooleanToYesNoConverter}}"></TextBox>
+                </Grid>
+                <StackPanel>
+                    <Label>Wyrażenia</Label>
+                    <ListView ItemsSource="{Binding ContextExpressions}" MaxHeight="150" Margin="5"></ListView>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </DockPanel>

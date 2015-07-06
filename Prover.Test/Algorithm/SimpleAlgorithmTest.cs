@@ -10,7 +10,7 @@ using Prover.Engine.Types.Expression;
 namespace Prover.Test.Algorithm
 {
     [TestClass]
-    public class SimpleAlgorithm_test
+    public class SimpleAlgorithmTest
     {
         private IExpression _falseExpression;
 
@@ -21,7 +21,7 @@ namespace Prover.Test.Algorithm
         [TestInitialize]
         public void Init()
         {
-            _algorithm = new SimpleAlgorithm();
+            _algorithm = AlgorithmFactory.GetAlgorithm(AlgorithmType.Simple);
 
             _falseExpression = new Negation(
                 new Conjunction(

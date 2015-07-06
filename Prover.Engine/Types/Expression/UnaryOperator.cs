@@ -8,7 +8,7 @@ namespace Prover.Engine.Types.Expression
 {
     public abstract class UnaryOperator : Operator
     {
-        protected readonly IExpression Operand;
+        public IExpression Operand { get; private set; }
 
         protected UnaryOperator(IExpression operand)
         {

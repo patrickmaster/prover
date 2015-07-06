@@ -9,7 +9,7 @@ using Prover.UI.Annotations;
 
 namespace Prover.UI.ViewModel
 {
-    abstract class ViewModelBase : INotifyPropertyChanged
+    abstract class ObservableBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

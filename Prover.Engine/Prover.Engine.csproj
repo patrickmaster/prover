@@ -40,18 +40,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Decomposition\Algorithm.cs" />
+    <Compile Include="Decomposition\AlgorithmFactory.cs" />
+    <Compile Include="Decomposition\AlgorithmType.cs" />
     <Compile Include="Decomposition\IAlgorithm.cs" />
+    <Compile Include="Decomposition\OptimizedAlgorithm.cs" />
     <Compile Include="Decomposition\SimpleAlgorithm.cs" />
     <Compile Include="Decomposition\AlgorithmResult.cs" />
     <Compile Include="Parser\IParser.cs" />
     <Compile Include="Parser\MockParser.cs" />
+    <Compile Include="Parser\MultipleCharsParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\Config.cs" />
     <Compile Include="Types\Decomposition\Connection.cs" />
     <Compile Include="Types\Decomposition\DecompositionResult.cs" />
     <Compile Include="Types\Decomposition\DecompositionType.cs" />
     <Compile Include="Types\Decomposition\IConnection.cs" />
     <Compile Include="Types\Decomposition\INode.cs" />
+    <Compile Include="Types\Decomposition\INodeFactory.cs" />
     <Compile Include="Types\Decomposition\Node.cs" />
+    <Compile Include="Types\Decomposition\OptimizedNode.cs" />
+    <Compile Include="Types\Decomposition\SimpleNode.cs" />
+    <Compile Include="Types\Decomposition\SimpleNodeFactory.cs" />
     <Compile Include="Types\Expression\Always.cs" />
     <Compile Include="Types\Expression\BinaryOperator.cs" />
     <Compile Include="Types\Expression\Conjunction.cs" />
@@ -68,6 +78,10 @@
     <Compile Include="Types\Expression\Negation.cs" />
     <Compile Include="Types\Expression\Sometime.cs" />
     <Compile Include="Types\Expression\UnaryOperator.cs" />
+    <Compile Include="Types\OperatorConfig.cs" />
+    <Compile Include="Types\OperatorsConfig.cs" />
+    <Compile Include="Types\OperatorType.cs" />
+    <Compile Include="Types\ParserException.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
