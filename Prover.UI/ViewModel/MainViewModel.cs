@@ -4,12 +4,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Threading;
 using System.Xml.Serialization;
-using GraphSharp.Controls;
 using Prover.Engine.Decomposition;
 using Prover.Engine.Parser;
 using Prover.Engine.Types;
@@ -17,13 +16,13 @@ using Prover.Engine.Types.Decomposition;
 using Prover.Engine.Types.Expression;
 using Prover.UI.Graph;
 using Prover.UI.Observable;
-using QuickGraph;
 
 namespace Prover.UI.ViewModel
 {
     class MainViewModel : ObservableBase
     {
         private readonly ProverGraphLayout _graphControl;
+        private readonly MainWindow _window;
 
         readonly ObservableValue<string> _formula = new ObservableValue<string>();
 
@@ -33,25 +32,20 @@ namespace Prover.UI.ViewModel
         {
             get
             {
-                return AlgorithmType != null && _algorithms.ContainsKey(AlgorithmType.Content.ToString()) ? _algorithms[AlgorithmType.Content.ToString()] : _algorithms.Values.First();
+                return _algorithms.ContainsKey(AlgorithmType) ? _algorithms[AlgorithmType] : _algorithms.Values.First();
             }
         }
 
-        private readonly Dictionary<string, IAlgorithm> _algorithms = new Dictionary<string, IAlgorithm>
+        private readonly Dictionary<AlgorithmType, IAlgorithm> _algorithms = new Dictionary<AlgorithmType, IAlgorithm>
         {
-            {"Prosty", AlgorithmFactory.GetAlgorithm(Engine.Decomposition.AlgorithmType.Simple)},
-            {"Zoptymalizowany", AlgorithmFactory.GetAlgorithm(Engine.Decomposition.AlgorithmType.Optimized)}
+            {AlgorithmType.SimpleContradiction, AlgorithmFactory.GetAlgorithm(AlgorithmType.SimpleContradiction)},
+            {AlgorithmType.OptimizedContradiction, AlgorithmFactory.GetAlgorithm(AlgorithmType.OptimizedContradiction)},
+            {AlgorithmType.Optimized, AlgorithmFactory.GetAlgorithm(AlgorithmType.Optimized)}
         };
 
-        public ComboBoxItem AlgorithmType
+        protected AlgorithmType AlgorithmType
         {
-            get { return _algorithmType; }
-            set
-            {
-                if (value == _algorithmType) return;
-                _algorithmType = value;
-                OnPropertyChanged();
-            }
+            get { return (AlgorithmType) _window.CbAlgorithmType.SelectedIndex; }
         }
 
         public long NodesCount
@@ -67,7 +61,7 @@ namespace Prover.UI.ViewModel
 
         public bool IsFullGraphRendered { get { return NodesCount <= _nodesLimit; } }
 
-        public bool IsTautology
+        public bool? IsTautology
         {
             get { return _isTautology; }
             set
@@ -78,19 +72,39 @@ namespace Prover.UI.ViewModel
             }
         }
 
+        public bool? IsTrueable
+        {
+            get { return _isTrueable; }
+            set
+            {
+                if (value == _isTrueable) return;
+                _isTrueable = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsInProgress
+        {
+            get { return _isInProgress; }
+            set
+            {
+                if (value == _isInProgress) return;
+                _isInProgress = value;
+                OnPropertyChanged();
+            }
+        }
+
         private IParser _parser;
 
-        private ProverGraph _treeGraph =
-            new ProverGraph();
+        private ProverGraph _treeGraph = new ProverGraph();
 
         private OperatorsConfig _operatorsConfig;
 
         readonly XmlSerializer _xmlSerializer = new XmlSerializer(typeof(OperatorsConfig));
         readonly string _operatorsConfigPath = "operator-settings.xml";
         private long _solvingTime;
-        private ComboBoxItem _algorithmType;
         private long _nodesCount;
-        private bool _isTautology;
+        private bool? _isTautology;
         private readonly ObservableCollection<string> _contextExpressions = new ObservableCollection<string>();
 
         private readonly int _nodesLimit = 200;
@@ -107,10 +121,11 @@ namespace Prover.UI.ViewModel
             }
         }
 
-        public MainViewModel(ProverGraphLayout graphControl)
+        public MainViewModel(ProverGraphLayout graphControl, MainWindow window)
         {
             LoadConfig();
             _graphControl = graphControl;
+            _window = window;
             _graphControl.DataContext = _treeGraph;
             _parser = new MultipleCharsParser(_operatorsConfig);
         }
@@ -142,45 +157,79 @@ namespace Prover.UI.ViewModel
             }
         }
 
-        public void SolveInline()
+        public void SolveCancel()
         {
-            try
+            if (IsInProgress)
             {
-                IExpression expression = _parser.Parse(Formula.Value);
-                SolveExpression(expression);
+                _cancellationTokenSource.Cancel();
             }
-            catch (ParserException exception)
+            else
             {
-                MessageBox.Show(string.Format("Wystąpił błąd podczas parsowania\nZnak: {0}\nWiadomość: {1}", exception.CharacterNumber, exception.Message), "Błąd", MessageBoxButton.OK);
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show("Nieoczekiwany błąd podczas rozwiązywania\n\n" + exception.ToString(), "Błąd", MessageBoxButton.OK);
+                try
+                {
+                    IExpression expression = _parser.Parse(Formula.Value);
+                    SolveExpression(expression);
+                }
+                catch (ParserException exception)
+                {
+                    MessageBox.Show(
+                        string.Format("Wystąpił błąd podczas parsowania\nZnak: {0}\nWiadomość: {1}",
+                            exception.CharacterNumber, exception.Message), "Błąd", MessageBoxButton.OK);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show("Nieoczekiwany błąd podczas rozwiązywania\n\n" + exception, "Błąd",
+                        MessageBoxButton.OK);
+                }
             }
         }
 
         private void SolveExpression(IExpression expression)
         {
             Stopwatch watch = new Stopwatch();
-            watch.Start();
+            IsInProgress = true;
 
-            AlgorithmResult result = Algorithm.Solve(expression);
-            watch.Stop();
+            IAlgorithm algorithm = Algorithm;
 
-            SolvingTime = watch.ElapsedMilliseconds;
-            NodesCount = result.Nodes.Count();
-            IsTautology = result.IsTautology;
+            _cancellationTokenSource = new CancellationTokenSource();
 
-            SetContext(null);
-
-            RedrawGraph(result);
-
-            if (result.Nodes.Count() >= _nodesLimit)
+            Task.Factory.StartNew(() =>
             {
-                MessageBox.Show(
-                    string.Format("Liczba węzłów w grafie przekracza {0}, narysowany został częściowy graf", _nodesLimit),
-                    "Uwaga", MessageBoxButton.OK);
-            }
+                watch.Start();
+                AlgorithmResult result = algorithm.Solve(expression, _cancellationTokenSource.Token);
+                watch.Stop();
+                return result;
+            }, _cancellationTokenSource.Token).ContinueWith(task =>
+            {
+                AlgorithmResult result = task.Result;
+
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+
+                    IsInProgress = false; 
+                    SolvingTime = watch.ElapsedMilliseconds;
+                    NodesCount = result.Nodes.Count();
+                    IsTautology = result.IsTautology;
+                    IsTrueable = result.IsTrueable;
+
+                    SetContext(null);
+
+                    RedrawGraph(result);
+
+                    if (result.Nodes.Count() >= _nodesLimit)
+                    {
+                        MessageBox.Show(
+                            string.Format("Liczba węzłów w grafie przekracza {0}, narysowany został częściowy graf", _nodesLimit),
+                            "Uwaga", MessageBoxButton.OK);
+                    }
+                }));
+            }, _cancellationTokenSource.Token).ContinueWith(task =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    IsInProgress = false; 
+                }));
+            });
         }
 
         private void RedrawGraph(AlgorithmResult result)
@@ -298,6 +347,9 @@ namespace Prover.UI.ViewModel
 
         readonly Stack<INode> _renderedStack = new Stack<INode>();
         private INode _currentRootNode;
+        private bool _isInProgress;
+        private CancellationTokenSource _cancellationTokenSource;
+        private bool? _isTrueable;
 
         public void LoadRoot()
         {

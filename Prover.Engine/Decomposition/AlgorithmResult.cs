@@ -5,7 +5,9 @@ namespace Prover.Engine.Decomposition
 {
     public class AlgorithmResult
     {
-        public bool IsTautology { get; set; }
+        public bool? IsTautology { get; set; }
+
+        public bool? IsTrueable { get; set; }
 
         public IEnumerable<INode> Nodes { get; set; }
 

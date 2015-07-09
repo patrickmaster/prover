@@ -6,10 +6,11 @@
         xmlns:engine="clr-namespace:Prover.Engine.Types.Decomposition;assembly=Prover.Engine"
         xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
         xmlns:zoom="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         ResizeMode="CanResize"
         Title="Prover" MinHeight="350" MinWidth="525">
     <Window.Resources>
-        <RoutedUICommand x:Key="Commands.SolveInline"></RoutedUICommand>
+        <RoutedUICommand x:Key="Commands.SolveCancel"></RoutedUICommand>
         <RoutedUICommand x:Key="Commands.OperatorsConfiguration"></RoutedUICommand>
         <RoutedCommand x:Key="Commands.LoadNodeChildren"></RoutedCommand>
         <RoutedCommand x:Key="Commands.LoadNodeAncestors"></RoutedCommand>
@@ -18,7 +19,8 @@
         <converters:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter" />
         <converters:NodeToBackgroundConverter x:Key="NodeToBackgroundConverter" />
         <converters:NodeToBorderConverter x:Key="NodeToBorderConverter" />
-
+        <converters:BoolToSolveCancelConverter x:Key="BoolToSolveCancelConverter" />
+        
         <DataTemplate x:Key="NodeTemplate" DataType="{x:Type engine:INode}">
             <StackPanel 
                 x:Name="Panel"
@@ -85,9 +87,9 @@
                         Executed="Open_Executed" />
         <CommandBinding Command="Close"
                         Executed="Close_OnExecuted"/>
-        <CommandBinding Command="{StaticResource Commands.SolveInline}"
-                        CanExecute="SolveInline_CanExecute"
-                        Executed="SolveInline_Executed"></CommandBinding>
+        <CommandBinding Command="{StaticResource Commands.SolveCancel}"
+                        CanExecute="SolveCancel_CanExecute"
+                        Executed="SolveCancel_Executed"></CommandBinding>
         <CommandBinding Command="{StaticResource Commands.OperatorsConfiguration}"
                         Executed="OperatorsConfiguration_Executed"></CommandBinding>
         <CommandBinding Command="{StaticResource Commands.LoadNodeChildren}"
@@ -133,7 +135,7 @@
                         <Binding Path="Formula.Value" UpdateSourceTrigger="PropertyChanged"></Binding>
                     </TextBox.Text>
                     <TextBox.InputBindings>
-                        <KeyBinding Command="{StaticResource Commands.SolveInline}"
+                        <KeyBinding Command="{StaticResource Commands.SolveCancel}"
                                     Gesture="CTRL+ENTER"></KeyBinding>
                     </TextBox.InputBindings>
                 </TextBox>
@@ -145,19 +147,21 @@
                     <Label Grid.Column="0">Algorytm</Label>
                     <ComboBox 
                         x:Name="CbAlgorithmType" Grid.Column="1" 
-                        Margin="3"
-                        SelectedItem="{Binding AlgorithmType}" SelectedIndex="0">
+                        Margin="3" SelectedIndex="0">
                         <ComboBoxItem Content="Prosty"></ComboBoxItem>
                         <ComboBoxItem Content="Zoptymalizowany"></ComboBoxItem>
+                        <ComboBoxItem Content="Zoptymalizowany wprost"></ComboBoxItem>
                     </ComboBox>
                 </Grid>
-                <Button Command="{StaticResource Commands.SolveInline}" Margin="3">Rozwiąż</Button>
+                <Button Command="{StaticResource Commands.SolveCancel}" Margin="3" Content="{Binding IsInProgress, Converter={StaticResource BoolToSolveCancelConverter}}"></Button>
+                <ProgressBar Margin="5" IsIndeterminate="{Binding IsInProgress}"></ProgressBar>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
@@ -174,6 +178,10 @@
                     <TextBox 
                         Grid.Column="1" Grid.Row="2" IsReadOnly="True" Margin="3"
                         Text="{Binding IsTautology, Converter={StaticResource BooleanToYesNoConverter}}"></TextBox>
+                    <Label Grid.Column="0" Grid.Row="3">Spełnialne?</Label>
+                    <TextBox 
+                        Grid.Column="1" Grid.Row="3" IsReadOnly="True" Margin="3"
+                        Text="{Binding IsTrueable, Converter={StaticResource BooleanToYesNoConverter}}"></TextBox>
                 </Grid>
                 <StackPanel>
                     <Label>Wyrażenia</Label>

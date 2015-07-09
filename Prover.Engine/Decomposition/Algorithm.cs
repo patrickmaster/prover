@@ -1,4 +1,5 @@
-﻿using Prover.Engine.Types.Decomposition;
+﻿using System.Threading;
+using Prover.Engine.Types.Decomposition;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Engine.Decomposition
@@ -18,5 +19,7 @@ namespace Prover.Engine.Decomposition
         }
 
         public abstract AlgorithmResult Solve(IExpression rootExpression);
+        
+        public abstract AlgorithmResult Solve(IExpression rootExpression, CancellationToken cancellationToken);
     }
 }

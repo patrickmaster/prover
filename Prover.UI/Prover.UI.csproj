@@ -105,6 +105,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\BooleanToYesNoConverter.cs" />
+    <Compile Include="Converters\BoolToSolveCancelConverter.cs" />
     <Compile Include="Converters\NodeToBackgroundConverter.cs" />
     <Compile Include="Converters\NodeToBorderConverter.cs" />
     <Compile Include="Graph\ProverEdge.cs" />

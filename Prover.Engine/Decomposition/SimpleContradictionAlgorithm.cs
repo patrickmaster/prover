@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using Prover.Engine.Types.Decomposition;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Engine.Decomposition
 {
-    internal class SimpleAlgorithm : Algorithm
+    internal class SimpleContradictionAlgorithm : Algorithm
     {
         public override AlgorithmResult Solve(IExpression rootExpression)
+        {
+            return SolveExpression(rootExpression, null);
+        }
+
+        private AlgorithmResult SolveExpression(IExpression rootExpression, CancellationToken? cancellationToken)
         {
             List<INode> nodes = new List<INode>();
             List<IConnection> connections = new List<IConnection>();
@@ -30,7 +36,8 @@ namespace Prover.Engine.Decomposition
 
                 if (decompositionResult.Type == DecompositionType.Beta)
                 {
-                    decomposedNodes = decomposedNode.CreateBranch(decompositionResult.LeftExpression, decompositionResult.RightExpression);
+                    decomposedNodes = decomposedNode.CreateBranch(decompositionResult.LeftExpression,
+                        decompositionResult.RightExpression);
                 }
                 else
                 {
@@ -53,21 +60,34 @@ namespace Prover.Engine.Decomposition
                     ((Node)node).IsBranchClosed = true;
                     nodes.Add(node);
                 }
+
+                if (cancellationToken.HasValue)
+                {
+                    ((CancellationToken)cancellationToken).ThrowIfCancellationRequested();
+                }
             }
 
             IEnumerable<INode> openNodes = nodes.Where(x => !x.HasNonLiterals && !x.IsClosed);
 
             foreach (INode openNode in openNodes)
             {
-                MarkNodeAndParentsOpen((Node) openNode);
+                MarkNodeAndParentsOpen((Node)openNode);
             }
+
+            bool isTautology = !openNodes.Any();
 
             return new AlgorithmResult
             {
-                Connections = connections,
+                Connections = connections, 
                 Nodes = nodes,
-                IsTautology = !openNodes.Any()
+                IsTautology = isTautology,
+                IsTrueable = isTautology ? true : (bool?) null
             };
+        }
+
+        public override AlgorithmResult Solve(IExpression rootExpression, CancellationToken cancellationToken)
+        {
+            return SolveExpression(rootExpression, cancellationToken);
         }
     }
 }

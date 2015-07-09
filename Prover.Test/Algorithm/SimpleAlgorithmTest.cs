@@ -21,7 +21,7 @@ namespace Prover.Test.Algorithm
         [TestInitialize]
         public void Init()
         {
-            _algorithm = AlgorithmFactory.GetAlgorithm(AlgorithmType.Simple);
+            _algorithm = AlgorithmFactory.GetAlgorithm(AlgorithmType.SimpleContradiction);
 
             _falseExpression = new Negation(
                 new Conjunction(
@@ -49,7 +49,7 @@ namespace Prover.Test.Algorithm
 
             Assert.AreEqual(7, result.Connections.Count());
             Assert.AreEqual(8, result.Nodes.Count());
-            Assert.IsTrue(result.IsTautology);
+            Assert.AreEqual(true, result.IsTautology);
         }
     }
 }

@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Prover.Engine.Types.Decomposition;
 using Prover.Engine.Types.Expression;
 
 namespace Prover.Engine.Decomposition
 {
-    class OptimizedAlgorithm : Algorithm
+    internal class OptimizedContradictionAlgorithm : Algorithm
     {
         public override AlgorithmResult Solve(IExpression rootExpression)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public override AlgorithmResult Solve(IExpression rootExpression, CancellationToken cancellationToken)
-        {
-            return SolveExpression(rootExpression, cancellationToken);
+            return SolveExpression(rootExpression, null);
         }
 
         private AlgorithmResult SolveExpression(IExpression rootExpression, CancellationToken? cancellationToken)
@@ -23,7 +22,7 @@ namespace Prover.Engine.Decomposition
             List<IConnection> connections = new List<IConnection>();
             Stack<INode> toDecompose = new Stack<INode>();
 
-            INode rootNode = new OptimizedNode(null, rootExpression);
+            INode rootNode = new OptimizedNode(null, new Negation(rootExpression));
             toDecompose.Push(rootNode);
             nodes.Add(rootNode);
 
@@ -76,8 +75,8 @@ namespace Prover.Engine.Decomposition
                             {
                                 Connections = connections,
                                 Nodes = nodes,
-                                IsTautology = null,
-                                IsTrueable = true
+                                IsTautology = false,
+                                IsTrueable = null
                             };
                         }
                     }
@@ -85,7 +84,7 @@ namespace Prover.Engine.Decomposition
 
                 if (cancellationToken.HasValue)
                 {
-                    ((CancellationToken) cancellationToken).ThrowIfCancellationRequested();
+                    ((CancellationToken)cancellationToken).ThrowIfCancellationRequested();
                 }
             }
 
@@ -93,9 +92,14 @@ namespace Prover.Engine.Decomposition
             {
                 Connections = connections,
                 Nodes = nodes,
-                IsTautology = false,
-                IsTrueable = false
+                IsTautology = true,
+                IsTrueable = true
             };
+        }
+
+        public override AlgorithmResult Solve(IExpression rootExpression, CancellationToken cancellationToken)
+        {
+            return SolveExpression(rootExpression, cancellationToken);
         }
     }
 }

@@ -44,8 +44,9 @@
     <Compile Include="Decomposition\AlgorithmFactory.cs" />
     <Compile Include="Decomposition\AlgorithmType.cs" />
     <Compile Include="Decomposition\IAlgorithm.cs" />
+    <Compile Include="Decomposition\OptimizedContradictionAlgorithm.cs" />
     <Compile Include="Decomposition\OptimizedAlgorithm.cs" />
-    <Compile Include="Decomposition\SimpleAlgorithm.cs" />
+    <Compile Include="Decomposition\SimpleContradictionAlgorithm.cs" />
     <Compile Include="Decomposition\AlgorithmResult.cs" />
     <Compile Include="Parser\IParser.cs" />
     <Compile Include="Parser\MockParser.cs" />

@@ -30,18 +30,19 @@ namespace Prover.UI
         public MainWindow()
         {
             InitializeComponent();
-            _viewModel = new MainViewModel(Graph);
+            _viewModel = new MainViewModel(Graph, this);
             DataContext = _viewModel;
+            CbAlgorithmType.SelectedIndex = 0;
         }
 
-        private void SolveInline_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void SolveCancel_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _viewModel != null && !string.IsNullOrEmpty(_viewModel.Formula.Value);
         }
 
-        private void SolveInline_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void SolveCancel_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            _viewModel.SolveInline();
+            _viewModel.SolveCancel();
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)

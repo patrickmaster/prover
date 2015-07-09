@@ -2,7 +2,8 @@
 {
     public enum AlgorithmType
     {
-        Simple,
+        SimpleContradiction,
+        OptimizedContradiction,
         Optimized
     }
 }

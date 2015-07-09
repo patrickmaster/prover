@@ -12,10 +12,12 @@ namespace Prover.Engine.Decomposition
         {
             switch (type)
             {
+                case AlgorithmType.OptimizedContradiction:
+                    return new OptimizedContradictionAlgorithm();
+                case AlgorithmType.SimpleContradiction:
+                    return new SimpleContradictionAlgorithm();
                 case AlgorithmType.Optimized:
                     return new OptimizedAlgorithm();
-                    case AlgorithmType.Simple:
-                    return new SimpleAlgorithm();
             }
 
             throw new NotImplementedException("No algorithm for specified type");
